@@ -1,7 +1,5 @@
-from ast import Num
 import hashlib
 from statistics import median
-
 
 class CountSketch:
     def __init__(self, t: int, b: int):
@@ -16,7 +14,7 @@ class CountSketch:
         payload = (salt).to_bytes(2, "big") + obj
         h = self.hash()
         h.update(payload)
-        res = int.from_bytes(h.digest())
+        res = int.from_bytes(h.digest(), "big")
         return res % mod
 
     def hash_h(self, q: bytes, i: int) -> int:
@@ -36,10 +34,10 @@ class CountSketch:
             self.C[i][h] += s
 
     def estimate(self, q: bytes):
-       # naive implementation. should actually be implemented with max heap.
-       estimates = []
-       for i in range(self.t):
-           h = self.hash_h(q, i)
-           s = self.hash_s(q, i)
-           estimates.append(self.C[i][h] * s)
+        # naive implementation. should actually be implemented with max heap.
+        estimates = []
+        for i in range(self.t):
+            h = self.hash_h(q, i)
+            s = self.hash_s(q, i)
+            estimates.append(self.C[i][h] * s)
         return median(estimates)
